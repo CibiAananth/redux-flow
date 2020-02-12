@@ -2,7 +2,7 @@ import axios from 'api/axios';
 
 const get = ({ apiURL, params = {} }) => {
   const config = {
-    header: { Authorization: 'token a5d7d2aebc1e57f45a22beef858feba519e50912' }
+    headers: { Authorization: 'token fe4ab4049caaff4bd11ef7922aed70b19b3d1e75' }
   };
   config.params = params;
   return axios

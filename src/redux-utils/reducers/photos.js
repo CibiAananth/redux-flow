@@ -6,7 +6,7 @@ const initialState = {
   isFetching: false,
   photos: {
     count: 0,
-    list: []
+    list: {}
   }
 };
 
@@ -14,8 +14,9 @@ const reducer = createReducer(initialState, {
   [photoTypes.getPhotos.request]: state => {
     state.isFetching = true;
   },
-  [photoTypes.getPhotos.success]: state => {
+  [photoTypes.getPhotos.success]: (state, action) => {
     state.isFetching = false;
+    state.photos.list = action.payload.response.data;
   },
   [photoTypes.getPhotos.error]: state => {
     state.isFetching = false;
