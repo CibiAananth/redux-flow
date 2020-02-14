@@ -23,11 +23,13 @@ const scaleUpValues = (value, factor) => {
 
 const initialState = {
   miniMap: {
-    isWindowDragActive: false,
+    miniMapDragging: false,
     activeArea: [0, 0],
-    activeMouseEvent: ''
+    activeMouseEvent: '',
+    scaleDownFactor: 10
   },
   shelfCanvas: {
+    canvasScroll: false,
     width: 0,
     activeArea: [0, 0]
   }
@@ -41,6 +43,7 @@ const reducer = (state, action) => {
         shelfCanvas: { ...state.shelfCanvas, ...action.payload },
         miniMap: {
           ...state.miniMap,
+          scaleDownFactor: action.payload.scaleDownFactor,
           activeArea: [
             scaleDownValues(
               action.payload.activeArea[0],
@@ -58,6 +61,7 @@ const reducer = (state, action) => {
         ...state,
         shelfCanvas: {
           ...state.shelfCanvas,
+          canvasScroll: false,
           activeArea: [
             scaleUpValues(
               action.payload.activeArea[0],
@@ -71,7 +75,35 @@ const reducer = (state, action) => {
         },
         miniMap: {
           ...state.miniMap,
+          miniMapDragging: true,
           activeArea: [...action.payload.activeArea]
+        }
+      };
+    }
+    case 'SHELF_CANVAS_SCROLL_EVENT': {
+      return {
+        ...state,
+        shelfCanvas: {
+          ...state.shelfCanvas,
+          canvasScroll: true,
+          activeArea: [
+            action.payload.event.scrollLeft,
+            action.payload.event.scrollLeft + state.shelfCanvas.width
+          ]
+        },
+        miniMap: {
+          ...state.miniMap,
+          miniMapDragging: false,
+          activeArea: [
+            scaleDownValues(
+              action.payload.event.scrollLeft,
+              state.miniMap.scaleDownFactor
+            ),
+            scaleDownValues(
+              action.payload.event.scrollLeft + state.shelfCanvas.width,
+              state.miniMap.scaleDownFactor
+            )
+          ]
         }
       };
     }
@@ -83,6 +115,7 @@ const reducer = (state, action) => {
 const Konva = ({ list }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const dispatchLogger = params => {
+    console.log('dispatch', params);
     dispatch(params);
   };
 
@@ -121,14 +154,6 @@ const Konva = ({ list }) => {
     updateState();
   }, [updateState]);
 
-  useEffect(() => {
-    shelfCanvasRef.current.scrollTo({
-      top: 0,
-      left: state.shelfCanvas.activeArea[0],
-      behavior: 'smooth'
-    });
-  }, [state.shelfCanvas]);
-
   const handleButtonClick = ref => {
     ref.current.scrollBy({
       top: 0,
@@ -137,12 +162,14 @@ const Konva = ({ list }) => {
     });
   };
 
+  console.log('shelfCanvas', state);
+
   return (
     <>
       <ShelfCanvas
         canvasHeight={shelfCanvasHeight}
         canvasWidth={shelfCanvasWidth}
-        dispatch={dispatch}
+        dispatch={dispatchLogger}
         handleButtonClick={handleButtonClick}
         list={list}
         reducerState={state}
