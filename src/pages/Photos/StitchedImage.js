@@ -13,9 +13,8 @@ ImageNode.propTypes = {
   url: PropTypes.string.isRequired
 };
 
-const StitchedImage = ({ photoList, scaleDownFactor = 1 }) => {
+const StitchedImage = ({ photoList, scaleDownFactor, nativeProps }) => {
   let nextXPosition = 0;
-
   return (
     photoList &&
     photoList.map((image, i) => {
@@ -24,6 +23,7 @@ const StitchedImage = ({ photoList, scaleDownFactor = 1 }) => {
 
       return (
         <ImageNode
+          {...nativeProps}
           key={image.id}
           url={image.scaled_img}
           x={nextXPosition}
@@ -36,7 +36,14 @@ const StitchedImage = ({ photoList, scaleDownFactor = 1 }) => {
 };
 
 StitchedImage.propTypes = {
-  photoList: PropTypes.array.isRequired
+  photoList: PropTypes.array.isRequired,
+  scaleDownFactor: PropTypes.number,
+  nativeProps: PropTypes.object
+};
+
+StitchedImage.defaultProps = {
+  scaleDownFactor: 1,
+  nativeProps: {}
 };
 
 export default StitchedImage;

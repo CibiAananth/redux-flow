@@ -39,10 +39,35 @@ const MiniMap = ({
     });
   };
 
+  const handleImageClick = ({ evt }) => {
+    console.log('handleImageClick', evt.layerX);
+    // let x1 = 0;
+    // let x2 = 0;
+    // const center = (rectCoords[1] - rectCoords[0]) / 2;
+    // if (evt.layerX < center) {
+    //   x1 = rectCoords[0] - center <= 0 ? 0 : rectCoords[0] - center;
+    //   x2 = rectCoords[1] - center;
+    // } else {
+    //   x1 = rectCoords[0] + center;
+    //   x2 =
+    //     rectCoords[1] + center <= canvasWidth
+    //       ? canvasWidth
+    //       : rectCoords[1] + center;
+    // }
+
+    // dispatch({
+    //   payload: {
+    //     activeArea: [x1, x2],
+    //     scaleDownFactor
+    //   },
+    //   type: 'MINIMAP_WINDOW_DRAG'
+    // });
+  };
+
   return (
     <div ref={wrapperRef}>
       <Stage width={canvasWidth} height={canvasHeight}>
-        <Layer>
+        <Layer onClick={handleImageClick}>
           <StitchedImage
             photoList={list.images}
             scaleDownFactor={scaleDownFactor}

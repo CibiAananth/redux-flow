@@ -1,11 +1,10 @@
 /* eslint-disable jsx-a11y/mouse-events-have-key-events */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import useImage from 'use-image';
-import { debounce } from 'lodash';
-import { Stage, Layer, Image } from 'react-konva';
+import { debounce, throttle } from 'lodash';
+import { Stage, Layer, Rect } from 'react-konva';
 import StitchedImage from './StitchedImage';
 
 const styles = {
@@ -17,15 +16,6 @@ const styles = {
   }
 };
 
-const ImageNode = ({ url, ...rest }) => {
-  const [image] = useImage(url);
-  return (image && <Image {...rest} image={image} />) || null;
-};
-
-ImageNode.propTypes = {
-  url: PropTypes.string.isRequired
-};
-
 const ShelfCanvas = ({
   canvasHeight,
   canvasWidth,
@@ -35,6 +25,14 @@ const ShelfCanvas = ({
   wrapperRef
 }) => {
   const [userScroll, setUserScroll] = useState(false);
+
+  const throttledMouseEvents = useRef(throttle(q => handleMouseEvents(q), 800))
+    .current;
+
+  const handleMouseEvents = e => {
+    setUserScroll(e);
+  };
+
   useEffect(() => {
     if (!userScroll) {
       const { current: canvasRef } = wrapperRef;
@@ -55,8 +53,9 @@ const ShelfCanvas = ({
       });
     }
   };
-  const throttledScroll = useRef(debounce(q => handleCanvasScroll(q), 500))
-    .current;
+  const throttledScroll = useCallback(
+    useRef(debounce(q => handleCanvasScroll(q), 0)).current
+  );
 
   const [mouseEvent, setMouseEvent] = useState(null);
 
@@ -77,15 +76,29 @@ const ShelfCanvas = ({
     };
   }, [wrapperRef]);
 
+  console.log('list', list);
+
   return (
     <>
       <div ref={wrapperRef} style={styles.wrapper}>
         <Stage width={canvasWidth} height={canvasHeight}>
           <Layer
-            onMouseOver={() => setUserScroll(true)}
-            onMouseLeave={() => setUserScroll(false)}
+            onMouseOver={() => throttledMouseEvents(true)}
+            onMouseLeave={() => throttledMouseEvents(false)}
           >
             <StitchedImage photoList={list.images} />
+            {/* {list.variants[0].bounding_boxes.map((box, i) => {
+              return (
+                <Rect
+                  key={i + box.left * box.right}
+                  x={(box.left / 450) * 300}
+                  y={(box.top / 800) * 400}
+                  width={((box.right - box.left) / 450) * 300}
+                  height={((box.bottom - box.top) / 800) * 400}
+                  stroke="red"
+                />
+              );
+            })} */}
           </Layer>
         </Stage>
       </div>

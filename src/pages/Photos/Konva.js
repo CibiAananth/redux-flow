@@ -25,7 +25,6 @@ const initialState = {
   miniMap: {
     miniMapDragging: false,
     activeArea: [0, 0],
-    activeMouseEvent: '',
     scaleDownFactor: 10
   },
   shelfCanvas: {
