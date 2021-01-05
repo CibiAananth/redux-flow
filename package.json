@@ -6,7 +6,7 @@
     "@bugsnag/js": "^6.4.1",
     "@bugsnag/plugin-react": "^6.4.0",
     "@reduxjs/toolkit": "^1.2.3",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bugsnag-build-reporter": "^1.0.2",
     "bugsnag-sourcemaps": "^1.2.1",
     "prop-types": "^15.7.2",
